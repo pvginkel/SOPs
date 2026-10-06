@@ -1,0 +1,13 @@
+projects:
+  root:
+    description: >-
+      The Homelab QRH: standard operating procedures in sops/, built with a mirror of the Ansible
+      runbooks into a static site (site/build.py) that GitHub Actions publishes to GitHub Pages.
+    setup: cexec python poetry install --no-interaction
+    # The build is the test: it fails on bad front matter and on a broken link in an SOP. It
+    # mirrors the runbooks from the sibling Ansible checkout; a broken link there only warns.
+    build: cexec python poetry run python site/build.py --ansible ../Ansible --out _site
+    test: cexec python poetry run python site/build.py --ansible ../Ansible --out _site
+    lint:
+      - cexec python ruff check site
+      - cexec python ruff format --check site

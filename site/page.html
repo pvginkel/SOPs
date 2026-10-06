@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="en" data-theme="night">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>$title · Homelab QRH</title>
+<link rel="icon" href="${root}static/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="${root}static/qrh.css">
+<script>
+  (function () {
+    var t = null;
+    try { t = localStorage.getItem("qrh:theme"); } catch (e) {}
+    if (!t && window.matchMedia && matchMedia("(prefers-color-scheme: light)").matches) t = "day";
+    document.documentElement.dataset.theme = t || "night";
+  })();
+</script>
+</head>
+<body data-root="$root">
+<header class="topbar">
+  <button class="navtoggle" type="button" aria-controls="nav" aria-expanded="false">Index</button>
+  <a class="brand" href="${root}index.html"><span class="badge">QRH</span><span class="brand-text">Homelab Quick Reference Handbook</span></a>
+  <div class="search">
+    <input id="q" type="search" placeholder="Search   /" autocomplete="off" spellcheck="false" aria-label="Search the handbook">
+    <ol id="results" hidden></ol>
+  </div>
+  <button id="theme" class="theme" type="button" title="Day / night"></button>
+</header>
+<div class="layout">
+<nav id="nav" class="sidebar">$nav</nav>
+<main class="$main_class">
+$content
+</main>
+</div>
+<footer class="footer">$footer</footer>
+<script src="${root}static/qrh.js"></script>
+</body>
+</html>

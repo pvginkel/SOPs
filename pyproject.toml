@@ -1,0 +1,16 @@
+[project]
+name = "sops"
+version = "0"
+description = "The Homelab QRH: standard operating procedures, built into a static site for GitHub Pages."
+requires-python = ">=3.12"
+dependencies = [
+    "markdown-it-py (>=4,<5)",
+    "mdit-py-plugins (>=0.5,<1)",
+    "pyyaml (>=6,<7)",
+]
+
+[tool.poetry]
+package-mode = false
+
+[tool.ruff]
+line-length = 110
