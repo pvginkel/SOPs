@@ -39,6 +39,7 @@ desk: where you work from while the usual tools are down, and which runbook each
 |---|---|
 | The three PVE hosts rebooted together and things are coming back | [What happens on its own](https://github.com/pvginkel/Ansible/blob/main/docs/runbooks/cold-boot.md#what-happens-on-its-own), then watch [Order and checks](https://github.com/pvginkel/Ansible/blob/main/docs/runbooks/cold-boot.md#order-and-checks) top to bottom and step in at the first layer that doesn't come up |
 | A layer stays down: the `dhcp` pod not Ready, a pinned image `NotFound`, no SSO, a hook Job clash | [Break-glass](https://github.com/pvginkel/Ansible/blob/main/docs/runbooks/cold-boot.md#break-glass) |
+| New pods aren't created: `FailedCreate` events name `mpol.validate.kyverno.svc-fail` | [Kyverno refuses new pods](kyverno-break-glass.md) |
 | Kubernetes is up, but no DHCP or DNS in the house | [No DHCP or DNS in the house](no-dhcp-dns.md) |
 | Kubernetes is up, but every `.home` and `webathome.org` host is unreachable | [Front-door nginx down](front-door-nginx-down.md) |
 | OpenBao stays sealed or a node is gone; srviac's `iac` won't start | [OpenBao is down](openbao-recovery.md), [IaC agent cold boot](https://github.com/pvginkel/Ansible/blob/main/docs/runbooks/iac-cold-boot.md) |
