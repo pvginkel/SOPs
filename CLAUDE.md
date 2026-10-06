@@ -13,6 +13,10 @@ SOP format: front matter, kinds, steps, callouts and links. Read it before writi
   `kc project lint` runs ruff over `site/`.
 - **Publishing.** A push to `main` publishes the site through `.github/workflows/pages.yml`. Ask the
   operator before pushing.
+- **Architecture.** `docs/architecture/architecture.yaml` is this repo's model in the federated
+  architecture (producer `homelab-qrh`), validated and archived by `Jenkinsfile.architecture`,
+  the job `AaC/SOPs`. The Architecture repo's central update keeps it current; `.architecturerc`
+  says what changes it, and a new SOP never does.
 - **Style.** The site is a cockpit Quick Reference Handbook on purpose: colored section tabs,
   dotted challenge-response leaders, "End of procedure". Keep new UI in that spirit, and keep it
   dependency-free and working from `file://`, because the offline copy depends on it.

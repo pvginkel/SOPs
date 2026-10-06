@@ -1,0 +1,68 @@
+schemaVersion: "0.1"
+producer: homelab-qrh
+
+applicationComponents:
+  - id: app:homelab-qrh,5b13758c-48ae-4785-a4be-4590861ecfdf
+    label: Homelab QRH
+    summary: >-
+      The homelab's standard operating procedures as a cockpit-style Quick Reference Handbook: a
+      static site built from the SOPs, with a mirror of the Ansible runbooks, that works offline.
+    introduced: 2026-10-06
+    lifecycle: active
+    stereotype: SoftwareProduct
+    homepage: https://pvginkel.github.io/SOPs/
+    sourceRepository: git:pvginkel/SOPs
+
+  - id: app:homelab-qrh-prd,b7e5305a-bb84-4de6-8dee-131e0a5245b3
+    label: Homelab QRH (prd)
+    summary: >-
+      The published QRH site on GitHub Pages, hosted outside the homelab so the procedures for
+      bringing it back are reachable while it is down.
+    introduced: 2026-10-06
+    lifecycle: active
+    environment: prd
+
+applicationServices:
+  - id: svc:homelab-qrh-web,6e884e74-e428-4e1b-8713-6f8a6cb9bf9e
+    label: Homelab QRH site
+    summary: The browsable handbook, plus a zip of the whole site for reading it offline.
+    introduced: 2026-10-06
+    lifecycle: active
+
+applicationInterfaces:
+  - id: if:pvginkel-github-io-sops,c3c4c850-0f87-41a1-b91d-aee38586431c
+    label: pvginkel.github.io/SOPs
+    summary: Browser entry point to the QRH on GitHub Pages.
+    introduced: 2026-10-06
+    lifecycle: active
+    environment: prd
+    webUi: true
+    stats:
+      url: https://pvginkel.github.io/SOPs/
+
+relations:
+  - id: rel:homelab-qrh-realizes-web
+    source: app:homelab-qrh,5b13758c-48ae-4785-a4be-4590861ecfdf
+    target: svc:homelab-qrh-web,6e884e74-e428-4e1b-8713-6f8a6cb9bf9e
+    type: Realization
+
+  - id: rel:homelab-qrh-web-interface
+    source: if:pvginkel-github-io-sops,c3c4c850-0f87-41a1-b91d-aee38586431c
+    target: svc:homelab-qrh-web,6e884e74-e428-4e1b-8713-6f8a6cb9bf9e
+    type: Assignment
+
+  - id: rel:homelab-qrh-prd-specializes-product
+    source: app:homelab-qrh-prd,b7e5305a-bb84-4de6-8dee-131e0a5245b3
+    target: app:homelab-qrh,5b13758c-48ae-4785-a4be-4590861ecfdf
+    type: Specialization
+
+  - id: rel:homelab-qrh-prd-behind-pvginkel-github-io-sops
+    source: app:homelab-qrh-prd,b7e5305a-bb84-4de6-8dee-131e0a5245b3
+    target: if:pvginkel-github-io-sops,c3c4c850-0f87-41a1-b91d-aee38586431c
+    type: Association
+
+  # GitHub Pages is declared in the Architecture repo's shared external services.
+  - id: rel:github-pages-serves-homelab-qrh-prd
+    source: svc:github-pages,dee1448c-1c3d-4f13-bac5-3d38695d0add
+    target: app:homelab-qrh-prd,b7e5305a-bb84-4de6-8dee-131e0a5245b3
+    type: Serving

@@ -1,0 +1,13 @@
+instructions: |
+  The model says one thing: the QRH is a static site published on GitHub Pages, outside the
+  homelab, so the procedures for bringing the homelab back are reachable while it is down.
+
+  Only a change to how or where the site is published changes the architecture: the hosting, the
+  URL, or a new surface people reach by name. Adding, editing or removing an SOP under sops/ never
+  does, nor does a change to the site's look or to site/build.py that keeps the same surface.
+
+  Deliberately left out: the individual SOPs and the mirrored Ansible runbooks (files), edges from
+  an SOP to the things it is about (a documentation index, not architecture), the build-time
+  mirror of pvginkel/Ansible (a dependency between repos), the GitHub Actions build and its daily
+  schedule, the offline zip (a file on the same surface) and the checkbox state kept in the
+  browser.
