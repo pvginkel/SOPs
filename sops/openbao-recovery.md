@@ -20,11 +20,8 @@ you to the right section with the right things on the desk.
 | srviac's `iac` won't start because OpenBao is down | [IaC agent cold boot](https://github.com/pvginkel/Ansible/blob/main/docs/runbooks/iac-cold-boot.md) |
 | Everything restarted at once (a power cut) | [Estate cold boot](https://github.com/pvginkel/Ansible/blob/main/docs/runbooks/cold-boot.md) |
 
-!!! danger "New hardware: fire, theft, nothing left"
-    There is no master site-recovery runbook yet. OpenBao is not first: its listener certificate
-    comes from step-ca, which runs on Kubernetes. The order is bare metal, core VMs, the k8s
-    control plane and Ceph, [step-ca](https://github.com/pvginkel/Ansible/blob/main/docs/runbooks/step-ca-bootstrap.md),
-    then OpenBao (whole-cluster loss above), then ESO and the workloads that need OpenBao.
+New hardware (fire, theft, nothing left): OpenBao is not first. The order is on
+[Estate down, or a power cut](estate-cold-boot.md).
 
 ## Before you start
 
