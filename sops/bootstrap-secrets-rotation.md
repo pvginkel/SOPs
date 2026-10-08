@@ -28,10 +28,10 @@ after it lands under the new passphrase.
 
 !!! warning "Not yet exercised"
     No rekey has been run on this repo. Three files are vaulted: `roles/openbao/files/static.key`
-    whole, and five inline `!vault |` values in `inventories/prd/group_vars/all/vips.yml`
+    whole, and four inline `!vault |` values in `inventories/prd/group_vars/all/vips.yml`
     (`vrrp_auth_password`, `internal_tls_jwk_provisioner_password`) and
     `inventories/prd/group_vars/openbao.yml` (`openbao_admin_role_id`,
-    `openbao_admin_secret_id`, `openbao_oidc_client_secret`). `ansible-vault rekey` takes the
+    `openbao_admin_secret_id`). `ansible-vault rekey` takes the
     whole-file vault; the inline values are re-encrypted one by one with `encrypt_string`, the
     form each file's own header gives. Paths below are under `ansible/`.
 
