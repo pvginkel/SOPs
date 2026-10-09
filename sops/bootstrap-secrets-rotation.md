@@ -3,13 +3,17 @@ title: Annual rotation of the bootstrap-tier secrets
 kind: periodic
 project: Ansible
 when: >-
-  Once a year, or at once on suspicion that a workstation or Roboform is compromised. Nothing
-  announces it yet: SecretRotator's catalog lists the tier at interval `never`.
+  Once a year, when SecretRotator announces a bootstrap marker: Telegram warns 28, 21 and 14 days
+  before it falls due and every night from 13 days, and `secret-rotator ui` lists its box. At once
+  on suspicion that a workstation or Roboform is compromised.
 ---
 
 The bootstrap tier is what OpenBao cannot hold because it gates OpenBao or decrypts the repo.
-SecretRotator's inventory names six, the markers `rotator/bootstrap/*` in AnsibleSpecs
-`secret-rotation/catalog.md`. Four rotate on this card; the seal key and the backup age key
+SecretRotator holds six as the marker keys `rotator/bootstrap/*` (AnsibleSpecs
+`secret-rotation/catalog.md`), each `external` at 365 d: it never touches their values, and
+pressing Done on a key's box in `secret-rotator ui` records its rotation
+([external-key-due.md](https://github.com/pvginkel/Ansible/blob/main/docs/runbooks/external-key-due.md)).
+Each section below ends with that Done. Four rotate on this card; the seal key and the backup age key
 rotate only on compromise (end of card). The vault rekey comes first, so everything re-vaulted
 after it lands under the new passphrase.
 
@@ -23,6 +27,8 @@ after it lands under the new passphrase.
 4. [ ] A window with no `IaC/Scheduled *` job due. `IaC/Apply`, `IaC/Scheduled Drift` (daily,
    `H 11`) and `IaC/Scheduled Certs` (Fridays, `H 4`) run Ansible on srviac and read vaulted
    values; while the repo and srviac disagree on the passphrase, they fail.
+5. [ ] `secret-rotator ui` on srviac :: the VS Code task **secret-rotator ui (srviac)**, for the
+   Done that ends each section
 
 ## 1. The ansible-vault passphrase
 
@@ -86,12 +92,17 @@ after it lands under the new passphrase.
 
 10. [ ] Roboform :: the "operator workstation" entry gets the new passphrase; delete the `(new)`
     copy. Any other workstation with an `ansible/.vault_pass` gets it too.
+11. [ ] `secret-rotator ui` :: press Done on two boxes, one for each key this section rotated:
+    `rotator/bootstrap/ansible-vault-passphrase#ansible-vault-passphrase` and
+    `eso/prd/kubecoder/prd/catalog#ansible-vault-password`.
 
 ## 2. JWK provisioner password
 
 1. [ ] [step-ca-bootstrap.md § JWK provisioner password rotation](https://github.com/pvginkel/Ansible/blob/main/docs/runbooks/step-ca-bootstrap.md#jwk-provisioner-password-rotation):
    new password, re-encrypt the provisioner on the CA, re-vault
    `internal_tls_jwk_provisioner_password`, force one re-issue, update Roboform.
+2. [ ] `secret-rotator ui` :: Done on
+   `rotator/bootstrap/jwk-provisioner-password#jwk-provisioner-password`.
 
 ## 3. GitHub PAT for TerraformState
 
@@ -99,24 +110,19 @@ after it lands under the new passphrase.
    mint a PAT with the same scope (`repo` classic, or `Contents: Read and write` on
    `TerraformState`), paste it into `/etc/iac/secrets.yaml` on srviac. No restart.
 2. [ ] Revoke the old PAT at GitHub.
+3. [ ] `secret-rotator ui` :: Done on `rotator/bootstrap/git-api-token#git-api-token`.
 
 ## 4. Jenkins inbound-agent secret
 
 1. [ ] [iac-agent.md § `JENKINS_AGENT_SECRET`](https://github.com/pvginkel/Ansible/blob/main/docs/runbooks/iac-agent.md#jenkins_agent_secret):
    regenerate on the controller, paste into `/etc/iac/secrets.yaml`, `systemctl restart
    jenkins-agent` on srviac.
+2. [ ] `secret-rotator ui` :: Done on
+   `rotator/bootstrap/jenkins-agent-secret#jenkins-agent-secret`.
 
 ## 5. Record it
 
-1. [ ] Once SecretRotator is live: stamp each marker, so the inventory shows the
-   rotation. Its plan is one `operator.confirm`; the value never enters OpenBao
-   ([openbao.md §5](https://github.com/pvginkel/Ansible/blob/main/docs/runbooks/openbao.md#5--rotation)):
-
-    ```
-    ssh -t ansible@srviac "sudo iac -c 'secret-rotator run rotator/bootstrap/<marker>'"
-    ```
-
-2. [ ] Add a row to the run log below.
+1. [ ] Add a row to the run log below.
 
 !!! note "Not on this card"
     **The static seal key.** Rotation is a seal migration on all three srvvault nodes, sketched
