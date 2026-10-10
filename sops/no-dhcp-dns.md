@@ -36,7 +36,11 @@ no fallback on the router.
    "The operator desktop without DHCP".
 2. [ ] KubeCoder is down with srvk8s4 :: kubectl is `ssh ansible@srvk8s1 sudo microk8s kubectl …`.
    If DNS is down too, by IP (`10.1.0.27`) with the "SSH by IP" recipe under Break-glass.
-3. [ ] Keys :: `~/.ssh/id_ed25519_ansible`; RoboForm "Homelab SSH key" if the workstation is gone.
+3. [ ] Keys :: `~/.ssh/id_ed25519_ansible`. If the workstation is gone: RoboForm "Homelab SSH key"
+   until SecretRotator's `ssh-key` kind is in its nightly run's `kinds_enabled`. From then on
+   RoboForm holds none: OpenBao's `kv/iac/ansible-ssh-key#private`, or without OpenBao
+   `pvginkel` with your own key, whose `sudo` asks for its password:
+   `ssh -t pvginkel@srvk8s1 sudo microk8s kubectl …`.
 
 ## Then
 

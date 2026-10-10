@@ -26,10 +26,15 @@ New hardware (fire, theft, nothing left): OpenBao is not first. The order is on
 ## Before you start
 
 1. [ ] Roboform :: the ansible-vault passphrase, the Shamir recovery keys (3 of 5), the age backup key
-2. [ ] An Ansible checkout :: `git clone https://github.com/pvginkel/Ansible`, then `poetry install`
-3. [ ] On the machine you work from :: `bao`, `age`, `jq`, `terraform`, SSH to the PVE hosts
-4. [ ] If `openbao_ufw_enable` is on :: srvvaultN takes SSH from srviac only, so work from there
-5. [ ] Whole-cluster loss only: the newest backup :: `openbao/<ts>_openbao-backup.tgz.age` at
+2. [ ] The Ansible key, for `iac` while OpenBao is down :: in RoboForm under "Homelab SSH key"
+   until SecretRotator's `ssh-key` kind is in its nightly run's `kinds_enabled`. From then on
+   RoboForm holds none: `iac` takes srviac's own copy of the key, which step 3 of
+   [IaC agent cold boot](https://github.com/pvginkel/Ansible/blob/main/docs/runbooks/iac-cold-boot.md#3--substitute-literals-in-place)
+   splices in.
+3. [ ] An Ansible checkout :: `git clone https://github.com/pvginkel/Ansible`, then `poetry install`
+4. [ ] On the machine you work from :: `bao`, `age`, `jq`, `terraform`, SSH to the PVE hosts
+5. [ ] If `openbao_ufw_enable` is on :: srvvaultN takes SSH from srviac only, so work from there
+6. [ ] Whole-cluster loss only: the newest backup :: `openbao/<ts>_openbao-backup.tgz.age` at
    `backupServer.rcloneRemote` (StorageDeploy `config/prd/values.yaml`)
 
 ## Then
@@ -39,3 +44,13 @@ restore. The restore brings every AppRole back with the secret_ids it held at th
 steps 5 to 8 re-issue the ones whose consumers are now rejected: `openbao-admin` from a root
 token minted with the Shamir keys, then `iac-agent`, then `backup`, then every rotation made
 since the snapshot. Step 9 verifies.
+
+!!! warning "The Ansible key is written back, not rotated again"
+    Once SecretRotator's `ssh-key` kind is in its nightly run's `kinds_enabled`, step 8 starts
+    with the Ansible key: before any rotation it re-runs, any `iac` run that logs in as
+    `ansible`, and the night's run. The restore can set `iac/ansible-ssh-key` back to a key the
+    hosts no longer take, and the rotator logs in with the key the leaf holds, so running its
+    plan again cannot repair it. srviac's own copy holds the key the hosts take, since nothing
+    writes it from the leaf: step 8 of
+    [Whole-cluster loss](https://github.com/pvginkel/Ansible/blob/main/docs/runbooks/openbao.md#3--whole-cluster-loss)
+    writes it back to the leaf and its catalog copy.

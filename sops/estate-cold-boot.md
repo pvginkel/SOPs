@@ -26,7 +26,12 @@ desk: where you work from while the usual tools are down, and which runbook each
    srvk8s4 is back. SSH by IP needs the host certificate's name: the recipe is under Break-glass,
    "SSH by IP".
 5. [ ] Keys :: `~/.ssh/id_ed25519_ansible` for the VMs, `id_ed25519_pve` for `root` on the PVE
-   hosts. If the workstation is gone too, the ansible key is in RoboForm under "Homelab SSH key".
+   hosts. Until SecretRotator's `ssh-key` kind is in its nightly run's `kinds_enabled`, the
+   ansible key is in RoboForm under "Homelab SSH key" if the workstation is gone too. Once it
+   is, the key changes every 14 days, a workstation's copy is only as new as its last fetch, and
+   RoboForm holds none: take it from OpenBao, `kv/iac/ansible-ssh-key#private`. Without
+   OpenBao, log in as `pvginkel` with your own key by the same recipe, and `sudo` with its
+   password (`ssh -t` for a `sudo` command, so it can ask).
 6. [ ] An Ansible checkout :: `ansible/files/known_hosts.d/homelab` is the SSH CA the recipe
    checks against.
 7. [ ] SSO is down until Keycloak is back :: the Argo CD and Jenkins local `admin` passwords are
