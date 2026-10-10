@@ -20,9 +20,12 @@ deletes the branch. A run killed without a clean shutdown leaves it: an aborted 
 |---|---|---|
 | `prd/terraform.tfstate` (`terraform/prd`) | `IaC/Build-Main` and `IaC/Scheduled Drift` (plan), `IaC/Apply`, a `cexec iac terraform` in a KubeCoder environment, break-glass from wrkdev | `locks/prd/terraform.tfstate` |
 | `scratch/terraform.tfstate` (`terraform/scratch`) | the same runners | `locks/scratch/terraform.tfstate` |
-| `argocd/<Repo>/<stage>/terraform.tfstate` | the app's hook Job `tf-presync-<app>-<stage>` in `argocd-hooks`; `IaC/Destroy Stage` as `destroy-stage-<build#>` there | `locks/argocd/<Repo>/<stage>/terraform.tfstate` |
+| `argocd/<Repo>/[<path>/]<stage>/terraform.tfstate` | the app's hook Job `tf-presync-<app>-<stage>` in `argocd-hooks`; `IaC/Destroy Stage` as `destroy-stage-<build#>` there, with `APP_PATH` set to `<path>` | `locks/argocd/<Repo>/[<path>/]<stage>/terraform.tfstate` |
 
 `<Repo>` is the deploy repo as GitHub spells it, `FieldnotesDeploy` and not `fieldnotesdeploy`.
+`<path>/` is there only for an app in a directory of a monorepo; `<path>` is that directory, the
+registry entry's `path:`. An app `<app>` of `PlatformAddOnsDeploy` locks
+`locks/argocd/PlatformAddOnsDeploy/<app>/<stage>/terraform.tfstate`.
 
 ## Steps
 
