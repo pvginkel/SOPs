@@ -4,7 +4,8 @@ kind: periodic
 project: AIWorkflow
 when: >-
   After pushing a version bump of the dev plugin (AIWorkflow) or the kubecoder plugin
-  (KubeCoderConfig) by hand. The nightly card-pass does this itself for what it pushes.
+  (KubeCoderConfig) by hand, or when the nightly card pass's notification names a release it
+  pushed. The pass never installs one itself: installing is the operator's call.
 ---
 
 The loops and every kc-spawned session run the installed copy,
