@@ -8,8 +8,11 @@ when: Before starting srvk8sdev (VM 919 on pve), and before turning it off again
 srvk8sdev is the single-node dev cluster: microk8s (`k8s_dev`) with a co-located microceph
 (`ceph_dev`). It is off by default, `on_boot = false` in Ansible
 [`terraform/prd/vms.tf`](https://github.com/pvginkel/Ansible/blob/main/terraform/prd/vms.tf)
-since 2026-10-03, and Terraform ignores whether it runs. Nothing depends on it and nothing starts
-it but you. Every weekly job skips a dev host it cannot reach: `IaC/Scheduled Certs` (Friday) and
+since 2026-10-03, and Terraform ignores whether it runs. Nothing depends on it. Besides you, only
+SecretRotator's nightly run (05:30) starts it, for a due plan with a step on the dev cluster, and
+shuts it down again after if it started it
+([openbao.md § 5](https://github.com/pvginkel/Ansible/blob/main/docs/runbooks/openbao.md#5--rotation));
+such a boot does none of the catch-up below. Every weekly job skips a dev host it cannot reach: `IaC/Scheduled Certs` (Friday) and
 `IaC/Scheduled Update` (Sunday) go UNSTABLE on their dev stage, and `IaC/Apply` converges it last
 in a stage that can only go UNSTABLE. So each time it comes up it owes what it missed.
 
