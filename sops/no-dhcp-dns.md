@@ -59,5 +59,5 @@ patch still covers whatever holds the pod not Ready next time.
     patch; once the pod is Ready, sync or patch it back.
 
 Background: Ansible [`homelab-handover.md` §6](https://github.com/pvginkel/Ansible/blob/main/docs/homelab-handover.md#6-failure-characteristics--read-this-before-planning-capacity),
-the alert rules in PrometheusDeploy `config/prd/values.yaml` (groups `dhcp` and
+the alert rules in PlatformAddOnsDeploy `prometheus/config/prd/values.yaml` (groups `dhcp` and
 `loadbalancers`), and the incident in AnsibleSpecs `handovers/dhcp-outage-2026-09-25/`.

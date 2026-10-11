@@ -35,7 +35,7 @@ New hardware (fire, theft, nothing left): OpenBao is not first. The order is on
 4. [ ] On the machine you work from :: `bao`, `age`, `jq`, `terraform`, SSH to the PVE hosts
 5. [ ] If `openbao_ufw_enable` is on :: srvvaultN takes SSH from srviac only, so work from there
 6. [ ] Whole-cluster loss only: the newest backup :: `openbao/<ts>_openbao-backup.tgz.age` at
-   `backupServer.rcloneRemote` (StorageDeploy `config/prd/values.yaml`)
+   `backupServer.rcloneRemote` (HomelabAppsDeploy `storage/config/prd/values.yaml`)
 
 ## Then
 

@@ -22,7 +22,7 @@ mirrored on this site. This card is the order, and what to have on the desk.
 | You see | Do |
 |---|---|
 | `failed calling webhook "mpol.validate.kyverno.svc-fail"` in a ReplicaSet's, Job's or StatefulSet's `FailedCreate` events | Kyverno isn't answering. Restore below |
-| `admission webhook "mpol.validate.kyverno.svc-fail" denied the request` | Kyverno answers with an error from its policy. Restore below brings pod creation back too; the fix is in KyvernoDeploy's policy |
+| `admission webhook "mpol.validate.kyverno.svc-fail" denied the request` | Kyverno answers with an error from its policy. Restore below brings pod creation back too; the fix is in its policy in PlatformAddOnsDeploy `kyverno/` |
 | Pods missing in `kube-system`, `metallb-system`, `argocd-prd`, `argocd-hooks` or `kyverno-prd`, or a KubeCoder environment pod | Not this card: the webhook never sees those pods |
 | A pod started with a memory request you didn't expect | Not this card: [Which request a pod got](https://github.com/pvginkel/Ansible/blob/main/docs/runbooks/kyverno.md#which-request-a-pod-got-and-why) |
 
@@ -49,9 +49,10 @@ mirrored on this site. This card is the order, and what to have on the desk.
 ## Afterwards
 
 1. [ ] Fix Kyverno :: with its registrations gone nothing of Kyverno's refuses an apply, so a fix
-   pushed to KyvernoDeploy syncs as usual.
+   pushed to PlatformAddOnsDeploy `kyverno/` syncs as usual.
 2. [ ] Scale back to 3 :: `kyverno-admission-controller`. Kyverno doesn't come back by itself:
-   with `selfHeal` off, Argo leaves it at 0 until then or until KyvernoDeploy syncs.
+   with `selfHeal` off, Argo leaves it at 0 until then or until `kyverno-prd` syncs from
+   PlatformAddOnsDeploy `kyverno/`.
 3. [ ] Registrations back :: once a replica leads, `kyverno-resource-mutating-webhook-cfg` with
    entry `mpol.validate.kyverno.svc-fail` and owner `kyverno-prd:webhook`. The probe is admitted.
 4. [ ] Pods created since the noted time :: they kept the request they arrived with, none or their

@@ -16,7 +16,7 @@ Services among them, writes the generated config onto nginx's volume and **resta
 Deployment: a rollout, not a reload. A config nginx can't load reaches it at that restart.
 
 !!! note "Re-verified 2026-10-06"
-    NginxDeploy deploys through Argo CD (`nginx-prd`, auto-sync, no self-heal).
+    HomelabAppsDeploy `nginx/` deploys through Argo CD (`nginx-prd`, auto-sync, no self-heal).
     `server_names_hash_bucket_size` is 128 since the 2026-08-19 outage
     (`chart/files/conf.d/10-http-configuration.conf`), so a long environment hostname no longer
     kills nginx by itself; the longest name today is 50 characters. Jenkins is still ClusterIP-only
@@ -72,8 +72,8 @@ Deployment: a rollout, not a reload. A config nginx can't load reaches it at tha
 
 ## Afterwards
 
-1. [ ] The durable fix in NginxDeploy :: push to `main`. Its webhook was lost while nginx was
-   down; Argo polls every 30 minutes, or refresh it by hand:
+1. [ ] The durable fix in HomelabAppsDeploy `nginx/` :: push to `main`. Its webhook was lost
+   while nginx was down; Argo polls every 30 minutes, or refresh it by hand:
    [Webhooks](https://github.com/pvginkel/Ansible/blob/main/docs/runbooks/argocd.md#webhooks).
 2. [ ] Jenkins :: a push whose GitHub webhook landed while nginx was down is lost, and GitHub
    does not retry. Build by hand.
@@ -81,6 +81,6 @@ Deployment: a rollout, not a reload. A config nginx can't load reaches it at tha
    was the cause, fix the cause before then.
 
 Background: the 2026-08-19 outage (a 50-character environment hostname against nginx's 64-byte
-default bucket), recorded only in agent memory until this card; NginxDeploy's
-[README](https://github.com/pvginkel/NginxDeploy/blob/main/README.md); the alert in
-PrometheusDeploy `config/prd/values.yaml`, group `loadbalancers`.
+default bucket), recorded only in agent memory until this card; HomelabAppsDeploy
+[`nginx/README.md`](https://github.com/pvginkel/HomelabAppsDeploy/blob/main/nginx/README.md); the
+alert in PlatformAddOnsDeploy `prometheus/config/prd/values.yaml`, group `loadbalancers`.

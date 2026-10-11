@@ -15,8 +15,8 @@ Three senders share the channel. Which one it is tells you where to look.
 | A job name, a build link and the build description | jenkins-telegram-bot, on a FAILURE of any build. UNSTABLE and ABORTED are raised by the job itself | [Scheduled jobs](#scheduled-jobs) below |
 | healthchecks.io: the Prometheus heartbeat stopped | Alertmanager's pings stopped: Prometheus, Alertmanager or the whole cluster is down | [Heartbeat](#heartbeat) below |
 
-The rules, with every threshold and its reasoning, are PrometheusDeploy
-[`config/prd/values.yaml`](https://github.com/pvginkel/PrometheusDeploy/blob/main/config/prd/values.yaml)
+The rules, with every threshold and its reasoning, are PlatformAddOnsDeploy
+[`prometheus/config/prd/values.yaml`](https://github.com/pvginkel/PlatformAddOnsDeploy/blob/main/prometheus/config/prd/values.yaml)
 under `serverFiles.alerting_rules.yml`. Firing alerts are at `https://prometheus.home`, silences
 at `https://alertmanager.home`. The `kubectl` lines below need a prd kubeconfig; from a KubeCoder
 environment `cexec iac kubectl --context prd …` reads, and `--kubeconfig ~/.kube/config-prd-write`
