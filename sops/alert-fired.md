@@ -17,8 +17,8 @@ Three senders share the channel. Which one it is tells you where to look.
 
 The rules, with every threshold and its reasoning, are PlatformAddOnsDeploy
 [`prometheus/config/prd/values.yaml`](https://github.com/pvginkel/PlatformAddOnsDeploy/blob/main/prometheus/config/prd/values.yaml)
-under `serverFiles.alerting_rules.yml`. Firing alerts are at `https://prometheus.home`, silences
-at `https://alertmanager.home`. The `kubectl` lines below need a prd kubeconfig; from a KubeCoder
+under `serverFiles.alerting_rules.yml`. Firing alerts are at `http://prometheus.home`, silences
+at `http://alertmanager.home`. The `kubectl` lines below need a prd kubeconfig; from a KubeCoder
 environment `cexec iac kubectl --context prd …` reads, and `--kubeconfig ~/.kube/config-prd-write`
 writes.
 
