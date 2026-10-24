@@ -40,7 +40,11 @@ up.
    the newest Drive backup into a throwaway container, with the chart's start arguments. Record it
    in its [Drill log](https://github.com/pvginkel/Ansible/blob/main/docs/runbooks/youtrack-restore.md#drill-log).
    First drill still owed.
-5. [ ] Add a row per drill to the run log below.
+5. [ ] claude-home :: [claude-home-restore.md §3](https://github.com/pvginkel/Ansible/blob/main/docs/runbooks/claude-home-restore.md#3--restore-drill):
+   the newest Drive copy of `~/.claude` restored beside the live home, its links checked as links
+   and never read through. Record it in its [Drill log](https://github.com/pvginkel/Ansible/blob/main/docs/runbooks/claude-home-restore.md#drill-log).
+   First drill still owed.
+6. [ ] Add a row per drill to the run log below.
 
 !!! warning "Backed up, but nothing to drill"
     The `postgres-pas` dumps (90 kept on Drive, nightly `pg_dump` through `backup-server`) and

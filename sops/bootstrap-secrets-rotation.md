@@ -131,7 +131,7 @@ after it lands under the new passphrase.
     until every node has migrated. On compromise only.
 
     **The backup age key.** Its private half lives only in Roboform; every kept backup (OpenBao,
-    `postgres-pas`, YouTrack) is encrypted to the public half in `backup-server`'s
+    `postgres-pas`, YouTrack, `claude-home`) is encrypted to the public half in `backup-server`'s
     `backup-server-age-key` ConfigMap. A rotation keeps the old private key until those age out.
     No procedure exists. On compromise only. The Terraform state age key is a different key,
     `kv/iac/tf-backend`, and re-encrypting every state is a project, not a rotation.
