@@ -19,11 +19,13 @@ Alertmanager's alerts also show on the phone, under the ntfy topic `alerts`.
 
 The rules, with every threshold and its reasoning, are PlatformAddOnsDeploy
 [`prometheus/config/prd/values.yaml`](https://github.com/pvginkel/PlatformAddOnsDeploy/blob/main/prometheus/config/prd/values.yaml)
-under `serverFiles.alerting_rules.yml`. Firing alerts are at `http://prometheus.home`, silences
-at `http://alertmanager.home`. While one of the three direct alerts fires, other alerts may reach
-neither the phone nor the group: `http://alertmanager.home` lists every firing one. The `kubectl`
-lines below need a prd kubeconfig; from a KubeCoder environment `cexec iac kubectl --context prd …`
-reads, and `--kubeconfig ~/.kube/config-prd-write` writes.
+under `serverFiles.alerting_rules.yml`. Firing alerts are at `http://prometheus.home`, silences at
+`http://alertmanager.home`. While one of the three direct alerts fires, other alerts may reach
+neither the phone nor the group: `http://alertmanager.home` lists every firing one. While the
+Alertmanager pod is not ready, as when its adapter sidecar is not running, that page answers
+nothing, and `http://prometheus.home/alerts` still lists the rules' firing alerts, though not Argo
+CD's events. The `kubectl` lines below need a prd kubeconfig; from a KubeCoder environment
+`cexec iac kubectl --context prd …` reads, and `--kubeconfig ~/.kube/config-prd-write` writes.
 
 ## Alerts
 
@@ -51,7 +53,7 @@ The description in the message says what to check first. Where a runbook exists 
 | `OIDCDiscoveryUnprobed` | None written. The `blackbox-exporter` pod in `prometheus-prd` |
 | `NtfyDown` | [notifications § NtfyDown fires](https://github.com/pvginkel/Ansible/blob/main/docs/runbooks/notifications.md#ntfydown-fires). The phones get nothing, and the bridge's API is down with it |
 | `NotificationBridgeDown` | [notifications § NotificationBridgeDown fires](https://github.com/pvginkel/Ansible/blob/main/docs/runbooks/notifications.md#notificationbridgedown-fires). Every submit to the bridge fails |
-| `AlertmanagerWebhookFailing` | None written. A delivery to one of Alertmanager's webhooks failed: the adapter sidecar's, and a group's alerts reached neither the phone nor the group, or healthchecks.io's, a heartbeat ping. The description's `kubectl` lines name the receiver and say what to check first for each |
+| `AlertmanagerWebhookFailing` | [notifications § AlertmanagerWebhookFailing fires](https://github.com/pvginkel/Ansible/blob/main/docs/runbooks/notifications.md#alertmanagerwebhookfailing-fires). A delivery to one of Alertmanager's webhooks failed: the adapter sidecar's, and a group's alerts reached neither the phone nor the group, or healthchecks.io's, a heartbeat ping |
 | `NotificationDeliveryFailing` | [notifications § NotificationDeliveryFailing fires](https://github.com/pvginkel/Ansible/blob/main/docs/runbooks/notifications.md#notificationdeliveryfailing-fires). The alert's `registration` and `channel` labels say which channel failed |
 | `PodStuckInBackOff` | None written. `ImagePullBackOff` with `NotFound` on a pinned digest: [cold-boot § Break-glass](https://github.com/pvginkel/Ansible/blob/main/docs/runbooks/cold-boot.md#break-glass) |
 | `NodeNotReady` | None written. A VM that is gone: [k8s-rebuild](https://github.com/pvginkel/Ansible/blob/main/docs/runbooks/k8s-rebuild.md) |
