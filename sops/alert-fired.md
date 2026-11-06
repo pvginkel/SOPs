@@ -3,25 +3,27 @@ title: An alert fired
 kind: abnormal
 project: Ansible
 when: >-
-  An Alertmanager alert shows on the phone or in the Homelab Alerts group, or a red or unstable
-  scheduled IaC job or a healthchecks.io message reaches the group.
+  An Alertmanager alert shows on the phone or in the Homelab Alerts group, a red or unstable
+  scheduled IaC job shows on the phone, or a healthchecks.io message reaches the group.
 ---
 
-Three senders share the Homelab Alerts group on Telegram. Which one it is tells you where to look.
-Alertmanager's alerts also show on the phone, under the ntfy topic `alerts`.
+Four senders bring an alert, and which one it is tells you where to look. The notification bridge
+brings Alertmanager's alerts to the phone alone, under the ntfy topic `alerts`, and red Jenkins
+builds under `jenkins`. Two senders still post in the Homelab Alerts group on Telegram:
+Alertmanager's direct receiver, for the three alerts on the bridge's own path, and healthchecks.io.
 
 | The message | Comes from | Go to |
 |---|---|---|
-| `<AlertName>` in bold, with ` — <host>` when the group has one and ` ×<n>` for a group of several, then each alert's summary in bold, its description quoted and a `graph` link | Prometheus's rules, through Alertmanager and the notification bridge, on the phone and in the group alike. Critical alerts ring (🟠 in the group); warnings arrive silent (🔵). One message per alert group, edited as the group changes, and it clears itself from both when the group resolves | [Alerts](#alerts) below |
-| `[FIRING] <AlertName>`, then `host:`, a summary and a description; `[RESOLVED]` as a new message once it resolves | Alertmanager straight to the group, never the phone, for the three alerts on the bridge's own path: `NtfyDown`, `NotificationBridgeDown` and `AlertmanagerWebhookFailing`. They always ring | [Alerts](#alerts) below |
-| A job name, a build link and the build description | jenkins-telegram-bot, on a FAILURE of any build. UNSTABLE and ABORTED are raised by the job itself | [Scheduled jobs](#scheduled-jobs) below |
+| `<AlertName>` as the title, with ` — <host>` when the group has one and ` ×<n>` for a group of several, then each alert's summary in bold, its description quoted and a `graph` link | Prometheus's rules, through Alertmanager and the notification bridge, on the phone alone, under `alerts`. Critical alerts ring at high priority; warnings arrive silent, at low. One notification per alert group, updated as the group changes, and it clears itself when the group resolves | [Alerts](#alerts) below |
+| `[FIRING] <AlertName>`, then `host:`, a summary and a description; `[RESOLVED]` as a new message once it resolves | Alertmanager straight to the group, never the phone, the only alerts of Alertmanager's that still reach the group: the three alerts on the bridge's own path: `NtfyDown`, `NotificationBridgeDown` and `AlertmanagerWebhookFailing`. They always ring | [Alerts](#alerts) below |
+| A job name, a build link and the build description | jenkins-notifications-bridge, on a FAILURE of any build, on the phone under `jenkins` until the job's next green or yellow build. UNSTABLE and ABORTED are raised by the job itself | [Scheduled jobs](#scheduled-jobs) below |
 | healthchecks.io: the Prometheus heartbeat stopped | Alertmanager's pings stopped: Prometheus, Alertmanager or the whole cluster is down | [Heartbeat](#heartbeat) below |
 
 The rules, with every threshold and its reasoning, are PlatformAddOnsDeploy
 [`prometheus/config/prd/values.yaml`](https://github.com/pvginkel/PlatformAddOnsDeploy/blob/main/prometheus/config/prd/values.yaml)
 under `serverFiles.alerting_rules.yml`. Firing alerts are at `http://prometheus.home`, silences at
-`http://alertmanager.home`. While one of the three direct alerts fires, other alerts may reach
-neither the phone nor the group: `http://alertmanager.home` lists every firing one. While the
+`http://alertmanager.home`. While one of the three direct alerts fires, other alerts may not reach
+the phone: `http://alertmanager.home` lists every firing one. While the
 Alertmanager pod is not ready, as when its adapter sidecar is not running, that page answers
 nothing, and `http://prometheus.home/alerts` still lists the rules' firing alerts, though not Argo
 CD's events. The `kubectl` lines below need a prd kubeconfig; from a KubeCoder environment
@@ -34,7 +36,7 @@ The description in the message says what to check first. Where a runbook exists 
 
 !!! note "A notification that stays"
     An alert inhibited after it was delivered never sends a resolve, so its notification stays on
-    the phone and in the group until you clear it by hand. The one inhibit rule today:
+    the phone until you clear it by hand. The one inhibit rule today:
     `NodeMemoryStallCounterWedged` inhibits `NodeMemoryStalled` and `NodeMemoryStallElevated` on
     its node. Argo's two events stay as well, by design (below).
 
@@ -53,7 +55,7 @@ The description in the message says what to check first. Where a runbook exists 
 | `OIDCDiscoveryUnprobed` | None written. The `blackbox-exporter` pod in `prometheus-prd` |
 | `NtfyDown` | [notifications § NtfyDown fires](https://github.com/pvginkel/Ansible/blob/main/docs/runbooks/notifications.md#ntfydown-fires). The phones get nothing, and the bridge's API is down with it |
 | `NotificationBridgeDown` | [notifications § NotificationBridgeDown fires](https://github.com/pvginkel/Ansible/blob/main/docs/runbooks/notifications.md#notificationbridgedown-fires). Every submit to the bridge fails |
-| `AlertmanagerWebhookFailing` | [notifications § AlertmanagerWebhookFailing fires](https://github.com/pvginkel/Ansible/blob/main/docs/runbooks/notifications.md#alertmanagerwebhookfailing-fires). A delivery to one of Alertmanager's webhooks failed: the adapter sidecar's, and a group's alerts reached neither the phone nor the group, or healthchecks.io's, a heartbeat ping |
+| `AlertmanagerWebhookFailing` | [notifications § AlertmanagerWebhookFailing fires](https://github.com/pvginkel/Ansible/blob/main/docs/runbooks/notifications.md#alertmanagerwebhookfailing-fires). A delivery to one of Alertmanager's webhooks failed: the adapter sidecar's, and a group's alerts did not reach the phone, or healthchecks.io's, a heartbeat ping |
 | `NotificationDeliveryFailing` | [notifications § NotificationDeliveryFailing fires](https://github.com/pvginkel/Ansible/blob/main/docs/runbooks/notifications.md#notificationdeliveryfailing-fires). The alert's `registration` and `channel` labels say which channel failed |
 | `PodStuckInBackOff` | None written. `ImagePullBackOff` with `NotFound` on a pinned digest: [cold-boot § Break-glass](https://github.com/pvginkel/Ansible/blob/main/docs/runbooks/cold-boot.md#break-glass) |
 | `NodeNotReady` | None written. A VM that is gone: [k8s-rebuild](https://github.com/pvginkel/Ansible/blob/main/docs/runbooks/k8s-rebuild.md) |
