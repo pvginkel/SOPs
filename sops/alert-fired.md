@@ -1,38 +1,47 @@
 ---
-title: A Telegram alert fired
+title: An alert fired
 kind: abnormal
 project: Ansible
 when: >-
-  An Alertmanager alert, a red or unstable scheduled IaC job, or a healthchecks.io message
-  reaches Telegram.
+  An Alertmanager alert shows on the phone or in the Homelab Alerts group, or a red or unstable
+  scheduled IaC job or a healthchecks.io message reaches the group.
 ---
 
-Three senders share the channel. Which one it is tells you where to look.
+Three senders share the Homelab Alerts group on Telegram. Which one it is tells you where to look.
+Alertmanager's alerts also show on the phone, under the ntfy topic `alerts`.
 
 | The message | Comes from | Go to |
 |---|---|---|
-| `[FIRING] <AlertName>`, then `host:`, a summary and a description | Prometheus's rules through Alertmanager. Critical alerts ring; warnings arrive silent | [Alerts](#alerts) below |
+| `<AlertName> — <host>` in bold, or `<AlertName> ×<n>` for a group of several, then each alert's summary in bold, its description quoted and a `graph` link | Prometheus's rules, through Alertmanager and the notification bridge, on the phone and in the group alike. Critical alerts ring (🟠 in the group); warnings arrive silent (🔵). One message per alert group, edited as the group changes, and it clears itself from both when the group resolves | [Alerts](#alerts) below |
+| `[FIRING] <AlertName>`, then `host:`, a summary and a description; `[RESOLVED]` as a new message once it resolves | Alertmanager straight to the group, never the phone, for the three alerts on the bridge's own path: `NtfyDown`, `NotificationBridgeDown` and `AlertmanagerWebhookFailing`. They always ring | [Alerts](#alerts) below |
 | A job name, a build link and the build description | jenkins-telegram-bot, on a FAILURE of any build. UNSTABLE and ABORTED are raised by the job itself | [Scheduled jobs](#scheduled-jobs) below |
 | healthchecks.io: the Prometheus heartbeat stopped | Alertmanager's pings stopped: Prometheus, Alertmanager or the whole cluster is down | [Heartbeat](#heartbeat) below |
 
 The rules, with every threshold and its reasoning, are PlatformAddOnsDeploy
 [`prometheus/config/prd/values.yaml`](https://github.com/pvginkel/PlatformAddOnsDeploy/blob/main/prometheus/config/prd/values.yaml)
 under `serverFiles.alerting_rules.yml`. Firing alerts are at `http://prometheus.home`, silences
-at `http://alertmanager.home`. The `kubectl` lines below need a prd kubeconfig; from a KubeCoder
-environment `cexec iac kubectl --context prd …` reads, and `--kubeconfig ~/.kube/config-prd-write`
-writes.
+at `http://alertmanager.home`. While one of the three direct alerts fires, other alerts may reach
+neither the phone nor the group: `http://alertmanager.home` lists every firing one. The `kubectl`
+lines below need a prd kubeconfig; from a KubeCoder environment `cexec iac kubectl --context prd …`
+reads, and `--kubeconfig ~/.kube/config-prd-write` writes.
 
 ## Alerts
 
 The description in the message says what to check first. Where a runbook exists it is linked;
 "none written" means the description is all there is.
 
+!!! note "A notification that stays"
+    An alert inhibited after it was delivered never sends a resolve, so its notification stays on
+    the phone and in the group until you clear it by hand. The one inhibit rule today:
+    `NodeMemoryStallCounterWedged` inhibits `NodeMemoryStalled` and `NodeMemoryStallElevated` on
+    its node. Argo's two events stay as well, by design (below).
+
 | Alert | Procedure |
 |---|---|
 | `BackupOverdue` | [backup-freshness §1](https://github.com/pvginkel/Ansible/blob/main/docs/runbooks/backup-freshness.md#1--backupoverdue-fires). If `BackupWatcherBlind` fires too, start at §2 |
 | `BackupWatcherBlind` | [backup-freshness §2](https://github.com/pvginkel/Ansible/blob/main/docs/runbooks/backup-freshness.md#2--backupwatcherblind-fires) |
 | `S3MirrorStale` | [s3-mirror § What can go wrong](https://github.com/pvginkel/Ansible/blob/main/docs/runbooks/s3-mirror.md#what-can-go-wrong) |
-| `ArgoCDSyncStillFailed`, `ArgoCDHealthStillDegraded`, and Argo's own `ArgoCDSyncFailed` / `ArgoCDHealthDegraded` (events; they never send a "resolved") | [argocd § Diagnosing a failed sync](https://github.com/pvginkel/Ansible/blob/main/docs/runbooks/argocd.md#diagnosing-a-failed-sync); the app at `https://argocd.home/applications/<name>` |
+| `ArgoCDSyncStillFailed`, `ArgoCDHealthStillDegraded`, and Argo's own `ArgoCDSyncFailed` / `ArgoCDHealthDegraded` (events: each arrives once and stays until you clear it) | [argocd § Diagnosing a failed sync](https://github.com/pvginkel/Ansible/blob/main/docs/runbooks/argocd.md#diagnosing-a-failed-sync); the app at `https://argocd.home/applications/<name>`, which an event's `graph` link opens |
 | `ArgoCDAlertsBlind` | None written. The controller pod in `argocd-prd` is down, or its metrics Service lost its scrape annotation: [argocd § Reading Argo without the CLI](https://github.com/pvginkel/Ansible/blob/main/docs/runbooks/argocd.md#reading-argo-without-the-cli) |
 | `DHCPNotAnswering`; `LoadBalancerNotAnnounced` for `dnsmasq-prd/dhcp` | [No DHCP or DNS in the house](no-dhcp-dns.md) |
 | `LoadBalancerNotAnnounced` for any other Service | None written. MetalLB withdraws a Service with no ready endpoints: the description's `kubectl` lines find the pod |
@@ -42,13 +51,14 @@ The description in the message says what to check first. Where a runbook exists 
 | `OIDCDiscoveryUnprobed` | None written. The `blackbox-exporter` pod in `prometheus-prd` |
 | `NtfyDown` | [notifications § NtfyDown fires](https://github.com/pvginkel/Ansible/blob/main/docs/runbooks/notifications.md#ntfydown-fires). The phones get nothing, and the bridge's API is down with it |
 | `NotificationBridgeDown` | [notifications § NotificationBridgeDown fires](https://github.com/pvginkel/Ansible/blob/main/docs/runbooks/notifications.md#notificationbridgedown-fires). Every submit to the bridge fails |
+| `AlertmanagerWebhookFailing` | None written. A delivery to one of Alertmanager's webhooks failed: the adapter sidecar's, and a group's alerts reached neither the phone nor the group, or healthchecks.io's, a heartbeat ping. The description's `kubectl` lines name the receiver and say what to check first for each |
 | `NotificationDeliveryFailing` | [notifications § NotificationDeliveryFailing fires](https://github.com/pvginkel/Ansible/blob/main/docs/runbooks/notifications.md#notificationdeliveryfailing-fires). The alert's `registration` and `channel` labels say which channel failed |
 | `PodStuckInBackOff` | None written. `ImagePullBackOff` with `NotFound` on a pinned digest: [cold-boot § Break-glass](https://github.com/pvginkel/Ansible/blob/main/docs/runbooks/cold-boot.md#break-glass) |
 | `NodeNotReady` | None written. A VM that is gone: [k8s-rebuild](https://github.com/pvginkel/Ansible/blob/main/docs/runbooks/k8s-rebuild.md) |
 | `NodeMemoryStalled`, `NodeMemoryStallElevated` | None written. Detection only: kubelet cannot evict on PSI. Compare the node's memory requests with its usage and look for requestless workloads |
 | `NodeMemoryStallCounterWedged` | None written. The kernel's PSI counter is stuck, not the node; the node's stall alerts are blind until it is rebooted, which resets the counter |
 | `NodeKubeReservedMissing` | A snap refresh rewrote `args/kubelet`. `site-k8s.yml` re-asserts it: run `IaC/Apply` ([iac-agent § Routine](https://github.com/pvginkel/Ansible/blob/main/docs/runbooks/iac-agent.md#routine-push-to-main-then-apply)) |
-| `Heartbeat` | Never reaches Telegram. Always firing, by design |
+| `Heartbeat` | Never shows on the phone or in the group. Always firing, by design: it pings healthchecks.io ([Heartbeat](#heartbeat)) |
 
 ## Scheduled jobs
 
