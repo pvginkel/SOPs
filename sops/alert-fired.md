@@ -60,7 +60,7 @@ The description in the message says what to check first. Where a runbook exists 
 | `PodStuckInBackOff` | None written. `ImagePullBackOff` with `NotFound` on a pinned digest: [cold-boot § Break-glass](https://github.com/pvginkel/Ansible/blob/main/docs/runbooks/cold-boot.md#break-glass) |
 | `NodeNotReady` | None written. A VM that is gone: [k8s-rebuild](https://github.com/pvginkel/Ansible/blob/main/docs/runbooks/k8s-rebuild.md) |
 | `NodeMemoryStalled`, `NodeMemoryStallElevated` | None written. Detection only: kubelet cannot evict on PSI. Compare the node's memory requests with its usage and look for requestless workloads |
-| `NodeMemoryStallCounterWedged` | None written. The kernel's PSI counter is stuck, not the node; the node's stall alerts are blind until it is rebooted, which resets the counter |
+| `NodeMemoryStallCounterWedged` | None written. The kernel's PSI counter is stuck, not the node: the 6.8 kernel's CephFS write path enters a memory stall it never leaves, and the count stays until the node reboots. The node's stall alerts are blind until then. Reboot it by hand, drained, to clear the counter: `ssh <node> sudo touch /var/run/reboot-required`, then `cd ansible && poetry run ansible-playbook playbooks/update-k8s.yml --limit <node>`, which drains the node, applies what is pending, reboots it and uncordons it |
 | `NodeKubeReservedMissing` | A snap refresh rewrote `args/kubelet`. `site-k8s.yml` re-asserts it: run `IaC/Apply` ([iac-agent § Routine](https://github.com/pvginkel/Ansible/blob/main/docs/runbooks/iac-agent.md#routine-push-to-main-then-apply)) |
 | `Heartbeat` | Never shows on the phone or in the group. Always firing, by design: it pings healthchecks.io ([Heartbeat](#heartbeat)) |
 
