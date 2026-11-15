@@ -30,9 +30,9 @@ key (handover §5).
 
 1. [ ] §1 Physical nodes :: CPU, RAM, PVE version and kernel, per node and the cluster totals
 2. [ ] §2 Storage :: which NVMe, SSD and HDD sit in which node; the OSD disk serials
-   (`ls /dev/disk/by-id/`); the datastores. The spare `/dev/sda` on pve is recorded as
-   `intentional_spare_disks` in `ansible/inventories/prd/host_vars/pve.yml`: update it if the
-   spare was used or pulled.
+   (`ls /dev/disk/by-id/`); the datastores. pve's datastores, `local-lvm-ssd` on `/dev/sda`
+   included, are made by hand and recorded in `ansible/inventories/prd/host_vars/pve.yml`: update
+   it if a disk behind one was moved, replaced or pulled.
 3. [ ] §3 Network :: NIC names behind `vmbr0` and `vmbr1`, and the USB 2.5 GbE adapters on
    pve1/pve2. Bridges are hand-configured (`/etc/network/interfaces`, no role), so this is their
    only description. The UDM section if the edge changed.
