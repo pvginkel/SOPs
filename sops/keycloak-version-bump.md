@@ -66,8 +66,7 @@ Each adopted app's `terraform/providers.tf` sets `keycloak_version` to the versi
 as a literal. Keycloak withholds its version from an admin client confined to one realm.
 
 1. [ ] Find them :: `grep -l keycloak_version */terraform/providers.tf` in HomelabAppsDeploy and
-   PlatformAddOnsDeploy, and `terraform/providers.tf` in each dedicated deploy repo. On
-   2026-11-21, pgAdmin's is the only one (HomelabAppsDeploy `pgadmin/`).
+   PlatformAddOnsDeploy, and `terraform/providers.tf` in each dedicated deploy repo.
 2. [ ] Bump :: set `keycloak_version` to the new version in each, one commit per repo, on a topic
    branch
 3. [ ] Plan before it lands :: a plan Job at the branch's SHA reads
