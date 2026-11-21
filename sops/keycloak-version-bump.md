@@ -42,8 +42,7 @@ login, the app's sync waits. The convention and the hook's credential are in the
 
 !!! danger "Every adopted app's sync fails until argocd-hook has the scope"
     From 26.8.2 the Admin REST API answers `401` to a token without the `kc-admin-api` scope
-    ([Migrating to 26.8.2](https://www.keycloak.org/docs/26.8.2/upgrading/); provider issue
-    [#1829](https://github.com/keycloak/terraform-provider-keycloak/issues/1829)). The upgrade
+    ([Migrating to 26.8.2](https://www.keycloak.org/docs/26.8.2/upgrading/)). The upgrade
     creates the scope in every realm and gives it to `admin-cli` and `security-admin-console`
     alone. The scope does not exist before the roll, so the clients get it right after.
 
@@ -51,8 +50,10 @@ A client whose service account holds a `realm-management` role calls the Admin A
 realm's admin console, give each one the scope: Clients, the client, Client scopes, Add client
 scope, `kc-admin-api`, **Default**. The client's next login takes a token that carries it.
 
-1. [ ] `homelab` :: `argocd-hook`, `iotsupport-admin`, and `keycloak-review-readonly` while it exists
-2. [ ] `homelab-dev` :: `iotsupport-admin`, and `keycloak-review-readonly` while it exists
+1. [ ] `homelab` :: `argocd-hook`, `iotsupport-admin`, `secret-rotator` once SecretRotator's go-live
+   has made it, and `keycloak-review-readonly` while it exists
+2. [ ] `homelab-dev` :: `iotsupport-admin`, `secret-rotator` once SecretRotator's go-live has made
+   it, and `keycloak-review-readonly` while it exists
 3. [ ] Reading :: a plan Job of an adopted app at `main` reads
    `presync: the plan carries no changes`
    ([§ Planning a stage's Terraform](https://github.com/pvginkel/Ansible/blob/main/docs/runbooks/argocd.md#planning-a-stages-terraform-as-its-hook-applies-it)).
