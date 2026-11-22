@@ -72,3 +72,8 @@ as a literal. Keycloak withholds its version from an admin client confined to on
 3. [ ] Plan before it lands :: a plan Job at the branch's SHA reads
    `presync: the plan carries no changes` for each stage it touches. Then fast-forward `main`.
    This is the runbook's rule that every commit is planned before it lands.
+4. [ ] The `prd` branches :: PilotDeploy's and KubeCoderDeploy's prd stages follow their repo's
+   `prd` branch, so they take the new version only at that repo's next promotion: Pilot's
+   `PilotApp/Promote-PRD`
+   ([How a change gets to production](https://github.com/pvginkel/PilotApp/blob/main/docs/deployment.md#how-a-change-gets-to-production)),
+   and KubeCoder's, which is yours to run ([Promote KubeCoder to prd](kubecoder-promote-prd.md))
